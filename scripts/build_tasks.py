@@ -37,9 +37,18 @@ items = get("/Items/metadata")
 items_out = {str(i["id"]): [i.get("name"), i.get("baseValue"), bool(i.get("tradeable"))] for i in items}
 
 game = get("/Configuration/game-data?minVersion=0")
-groups = game.get("Tasks") or game.get("tasks") or []
-if isinstance(groups, dict):
-    groups = list(groups.values())
+def find_groups(node, out):
+    # any dict with an "Items" list whose entries carry a TaskId is a task group
+    if isinstance(node, dict):
+        items = node.get("Items")
+        if isinstance(items, list) and items and isinstance(items[0], dict) and "TaskId" in items[0]:
+            out.append(node); return
+        for v in node.values(): find_groups(v, out)
+    elif isinstance(node, list):
+        for v in node: find_groups(v, out)
+groups = []
+find_groups(game, groups)
+print("groups", len(groups), file=sys.stderr)
 
 KEEP = ["TaskId","Name","Skill","LevelRequirement","BaseTime","ExpReward","ItemReward","ItemAmount","Costs",
         "Disabled","Hidden","AdditionalLevelRequirements","ItemIdRequired","BaseSuccessChancePercentage","TaskCategory"]
