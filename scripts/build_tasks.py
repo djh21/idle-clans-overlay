@@ -34,7 +34,7 @@ def get(path):
             raise
 
 items = get("/Items/metadata")
-items_out = {str(i["id"]): [i.get("name"), i.get("baseValue"), bool(i.get("tradeable"))] for i in items}
+items_out = {str(i["id"]): [i.get("name"), i.get("baseValue"), bool(i.get("tradeable")), i.get("associatedSkill"), i.get("equipmentSlot")] for i in items}
 
 game = get("/Configuration/game-data?minVersion=0")
 def find_groups(node, out):
