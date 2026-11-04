@@ -46,6 +46,13 @@ label.chip{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
 label.chip input{margin:0;accent-color:var(--accent)}
 
 #settings{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:12px;box-shadow:0 1px 2px rgba(27,36,51,.05)}
+.fold{border-top:1px solid var(--line);margin-top:12px;padding-top:8px}
+.fold summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:8px;user-select:none}
+.fold summary::-webkit-details-marker{display:none}
+.fold summary::before{content:"";width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(-45deg);margin:0 4px 2px 2px;transition:transform .15s;flex:none}
+.fold[open] summary::before{transform:rotate(45deg);margin-bottom:5px}
+.fold summary h2{margin:0}
+.fold > :not(summary){margin-top:8px}
 #settings h2{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 8px;font-weight:600}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px 14px}
 .grid label{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12.5px}
@@ -117,15 +124,22 @@ body.compact td{padding:4px 8px} body.compact .hr{font-size:13px} body.compact .
     <button class="iconbtn" id="importBtn">Import</button>
     <span id="importStatus" class="hint" style="margin:0"></span>
   </div>
-  <p class="hint">Pulls your skill levels, dealership upgrades and enchantment boosts from the public Idle Clans API (the same data as your idleclans.com profile page). Tools and capes are not in the profile, so set those by hand. Re-imports each time the page opens.</p>
-  <h2 style="margin-top:14px">My skill levels (hides methods above them when "My levels" is on)</h2>
+  <p class="hint">Fills in your levels, dealership upgrades and enchantment boosts from your public Idle Clans profile, and re-syncs each time the page opens. Tools and capes aren't in the profile: set those under Boosts.</p>
+  <details class="fold" id="fold-levels">
+  <summary><h2>My skill levels</h2></summary>
   <div class="grid" id="levels"></div>
-  <div class="settings-row">
+  <p class="hint">Used by the "My levels" toggle to hide methods you can't train yet. Filled in by Import.</p>
+  </details>
+  <details class="fold" id="fold-general" open>
+  <summary><h2>General</h2></summary>
+  <div class="settings-row" style="margin-top:0">
     <label>Sell tax <input id="tax" type="number" min="0" max="50" step="0.5"> %</label>
     <label>Auto-refresh every <input id="interval" type="number" min="30" max="900" step="30"> s</label>
     <label>Sort by <select id="sort" class="chip"><option value="hr">Profit / hour</option><option value="act">Profit / action</option><option value="xp">XP / hour</option></select></label>
   </div>
-  <h2 style="margin-top:14px">Boosts I own (recomputes every row for your account)</h2>
+  </details>
+  <details class="fold" id="fold-boosts">
+  <summary><h2>Boosts I own</h2></summary>
   <div class="grid boosts" id="boostSkills"></div>
   <div class="grid boosts" style="margin-top:8px">
     <div class="subhead">Dealership and clan upgrades</div>
@@ -139,8 +153,9 @@ body.compact td{padding:4px 8px} body.compact .hr{font-size:13px} body.compact .
     <label title="Clan Gatherers (5%), housing, events… added to every gathering skill">Other gathering speed <span><input id="b-other" type="number" min="0" max="80" step="1"> %</span></label>
     <label title="Clan upgrade: sales to NPC shops give 10% more gold"><span>NPC sales +10%</span><input id="b-npc10" type="checkbox"></label>
   </div>
-  <p class="hint">Speed boosts (tool + cape + enchant + other) add together and cut the action time: 10 s at 25% becomes 7.5 s. Doubles raise the expected output (XP is for one item). Numbers from the Idle Clans wiki; check the in-game shop if yours differ.</p>
-  <p class="hint">Settings are remembered in this browser only. Profit = output × better of (bid after tax, NPC value) − inputs × ask − gold costs, at base action speed with no boosts. Inputs with no sell offer use the 24h average; if that is missing too the row is flagged.</p>
+  <p class="hint">Speed boosts add together and cut the action time (10 s at 25% = 7.5 s). Doubles raise the expected output. Numbers from the Idle Clans wiki.</p>
+  </details>
+  <p class="hint">Profit = output × better of (bid after tax, NPC) − inputs × ask − gold costs. Settings are remembered in this browser only.</p>
 </section>
 
 <div class="controls" id="controls">
@@ -332,6 +347,8 @@ $("boostSkills").innerHTML = `<div class="subhead">Tools</div>` + SKILLS.map(k=>
   `<div class="subhead">Skilling capes</div>` + SKILLS.map(k=>`<label>${k} cape<select id="cape-${k}">${CAPES.map(([v,n])=>`<option value="${v}">${n}</option>`).join("")}</select></label>`).join("") +
   `<div class="subhead">Enchantment speed (imported)</div>` + SKILLS.map(k=>`<label title="Speed boost from enchanted jewellery (imported from profile)">${k} enchant <span><input type="number" min="0" max="40" step="0.5" id="ench-${k}" value="${S.boost.ench[k]}"> %</span></label>`).join("");
 SKILLS.forEach(k=>$("ench-"+k).addEventListener("input", e=>{ S.boost.ench[k]=+e.target.value||0; save(); render(); }));
+S.folds = S.folds || {};
+for (const id of ["fold-levels","fold-general","fold-boosts"]){ const d=$(id); if(S.folds[id]!=null) d.open=S.folds[id]; d.addEventListener("toggle", ()=>{ S.folds[id]=d.open; save(); }); }
 $("player").value = S.player||"";
 $("player").addEventListener("change", e=>{ S.player=e.target.value.trim(); save(); });
 $("importBtn").addEventListener("click", ()=>{ S.player=$("player").value.trim(); save(); importProfile(false); });
