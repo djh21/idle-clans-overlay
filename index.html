@@ -107,7 +107,14 @@ body.compact td{padding:4px 8px} body.compact .hr{font-size:13px} body.compact .
 <div class="error" id="error" hidden></div>
 
 <section id="settings" hidden>
-  <h2>My skill levels (hides methods above them when "Can do" is on)</h2>
+  <h2>Import from your profile</h2>
+  <div class="settings-row" style="margin-top:0">
+    <label>Player name <input id="player" type="text" autocomplete="off" spellcheck="false" style="width:150px;text-align:left;font-family:var(--sans)"></label>
+    <button class="iconbtn" id="importBtn">Import</button>
+    <span id="importStatus" class="hint" style="margin:0"></span>
+  </div>
+  <p class="hint">Pulls your skill levels, dealership upgrades and enchantment boosts from the public Idle Clans API (the same data as your idleclans.com profile page). Tools and capes are not in the profile, so set those by hand. Re-imports each time the page opens.</p>
+  <h2 style="margin-top:14px">My skill levels (hides methods above them when "Can do" is on)</h2>
   <div class="grid" id="levels"></div>
   <div class="settings-row">
     <label>Sell tax <input id="tax" type="number" min="0" max="50" step="0.5"> %</label>
@@ -127,7 +134,7 @@ body.compact td{padding:4px 8px} body.compact .hr{font-size:13px} body.compact .
     <label title="Clan Gatherers (5%), housing, events… added to every gathering skill">Other gathering speed <span><input id="b-other" type="number" min="0" max="80" step="1"> %</span></label>
     <label title="Clan upgrade: sales to NPC shops give 10% more gold"><span>NPC sales +10%</span><input id="b-npc10" type="checkbox"></label>
   </div>
-  <p class="hint">Speed boosts (tool + cape + other) add together and cut the action time: 10 s at 25% becomes 7.5 s. Doubles raise the expected output (XP is for one item). Numbers from the Idle Clans wiki; check the in-game shop if yours differ.</p>
+  <p class="hint">Speed boosts (tool + cape + enchant + other) add together and cut the action time: 10 s at 25% becomes 7.5 s. Doubles raise the expected output (XP is for one item). Numbers from the Idle Clans wiki; check the in-game shop if yours differ.</p>
   <p class="hint">Settings are remembered in this browser only. Profit = output × better of (bid after tax, NPC value) − inputs × ask − gold costs, at base action speed with no boosts. Inputs with no sell offer use the 24h average; if that is missing too the row is flagged.</p>
 </section>
 
@@ -156,12 +163,32 @@ const store = {
   set(s){ try{ localStorage.setItem("icp-settings", JSON.stringify(s)); }catch(e){} }
 };
 const S = Object.assign({levels:{}, tax:1, interval:60, sort:"hr", topn:"10", cando:false, compact:false, cat:"All", open:null}, store.get());
-S.boost = Object.assign({tool:{}, cape:{}, lumber:0, fisher:0, autocook:0, trickery:0, smelt:0, plank:0, forager:0, other:0, npc10:false}, S.boost||{});
-SKILLS.forEach(k=>{ if(S.levels[k]==null) S.levels[k]=120; if(S.boost.tool[k]==null) S.boost.tool[k]=0; if(S.boost.cape[k]==null) S.boost.cape[k]=0; });
+S.boost = Object.assign({tool:{}, cape:{}, ench:{}, lumber:0, fisher:0, autocook:0, trickery:0, smelt:0, plank:0, forager:0, other:0, npc10:false}, S.boost||{});
+SKILLS.forEach(k=>{ if(S.levels[k]==null) S.levels[k]=120; if(S.boost.tool[k]==null) S.boost.tool[k]=0; if(S.boost.cape[k]==null) S.boost.cape[k]=0; if(S.boost.ench[k]==null) S.boost.ench[k]=0; });
 const TOOLS = [["0","None"],["4","Normal 4%"],["6","Refined 6%"],["8","Great 8%"],["10","Elite 10%"],["12","Superior 12%"],["15","Outstanding 15%"],["20","Godlike 20%"],["25","Otherworldly 25%"]];
 const CAPES = [["0","None"],["5","T1 5%"],["10","T2 10%"],["15","T3 15%"],["20","T4 20%"]];
 const GATHER = {Woodcutting:1, Mining:1, Fishing:1};
-function speedPct(skill){ const b=S.boost; return Math.min(90, (+b.tool[skill]||0) + (+b.cape[skill]||0) + (GATHER[skill] ? (+b.other||0) : 0)); }
+function speedPct(skill){ const b=S.boost; return Math.min(90, (+b.tool[skill]||0) + (+b.cape[skill]||0) + (+b.ench[skill]||0) + (GATHER[skill] ? (+b.other||0) : 0)); }
+const XP_TABLE = [0,75,151,227,303,380,531,683,836,988,1141,1294,1447,1751,2054,2358,2663,2967,3272,3577,4182,4788,5393,5999,6606,7212,7819,9026,10233,11441,12648,13856,15065,16273,18682,21091,23500,25910,28319,30729,33140,37950,42761,47572,52383,57195,62006,66818,76431,86043,95656,105269,114882,124496,134109,153323,172538,191752,210967,230182,249397,268613,307028,345444,383861,422277,460694,499111,537528,614346,691163,767981,844800,921618,998437,1075256,1228875,1382495,1536114,1689734,1843355,1996975,2150596,2457817,2765038,3072260,3379481,3686703,3993926,4301148,4915571,5529994,6144417,6758841,7373264,7987688,8602113,9830937,11059762,12288587,13517412,14746238,15975063,17203889,19661516,22119142,24576769,27034396,29492023,31949651,34407278,39322506,44237735,49152963,54068192,58983421,63898650,68813880,78644309,88474739];
+const levelFor = xp => { let n=0; for(const t of XP_TABLE){ if(xp>=t) n++; else break; } return Math.max(1, Math.min(120, n)); };
+const TIER = { lumber:[0,20,40,60,80,100], fisher:[0,20,40,60,80,100], autocook:[0,10,20,30,40,50], trickery:[0,10,20,30,40,50], smelt:[0,10,20,30], plank:[0,30,60,100], forager:[0,10,20,30,40,50] };
+const UPG = { lumber:"theLumberjack", fisher:"theFisherman", autocook:"mostEfficientFisherman", trickery:"farmingTrickery", smelt:"smeltingMagic", plank:"plankBargain", forager:"powerForager" };
+async function importProfile(quiet){
+  const name = (S.player||"").trim(); if(!name) return;
+  const st = $("importStatus"); st.textContent = "Fetching " + name + "…";
+  try{
+    const res = await fetch("https://query.idleclans.com/api/Player/profile/" + encodeURIComponent(name), {cache:"no-store"});
+    if(res.status===404) throw new Error("no player called " + name);
+    if(!res.ok) throw new Error("API returned " + res.status);
+    const prof = await res.json();
+    const xp = prof.skillExperiences||{}, up = prof.upgrades||{}, en = prof.enchantmentBoosts||{};
+    SKILLS.forEach(k=>{ const key=k.toLowerCase(); if(xp[key]!=null){ S.levels[k]=levelFor(xp[key]); $("lvl-"+k).value=S.levels[k]; }
+      S.boost.ench[k] = +(en[key]||0); $("ench-"+k).value = S.boost.ench[k]; });
+    for (const [key, apiKey] of Object.entries(UPG)){ const tier = Math.min(+(up[apiKey]||0), TIER[key].length-1); S.boost[key] = TIER[key][tier]; $("b-"+key).value = String(S.boost[key]); }
+    S.playerSynced = Date.now(); save(); render();
+    st.textContent = "Imported " + (prof.username||name) + (prof.guildName?" ("+prof.guildName+")":"") + ": levels, upgrades, enchantments.";
+  }catch(e){ st.textContent = "Import failed: " + e.message + "."; }
+}
 
 let prices = null;      // itemId -> {bid, ask, avg}
 let lastFetch = null;
@@ -293,7 +320,13 @@ function save(){ store.set(S); }
 $("levels").innerHTML = SKILLS.map(k=>`<label>${k}<input type="number" min="1" max="120" id="lvl-${k}" value="${S.levels[k]}"></label>`).join("");
 SKILLS.forEach(k=>$("lvl-"+k).addEventListener("input", e=>{ S.levels[k]=+e.target.value||1; save(); render(); }));
 $("boostSkills").innerHTML = SKILLS.map(k=>`<label>${k} tool<select id="tool-${k}">${TOOLS.map(([v,n])=>`<option value="${v}">${n}</option>`).join("")}</select></label>`).join("") +
-  SKILLS.map(k=>`<label>${k} cape<select id="cape-${k}">${CAPES.map(([v,n])=>`<option value="${v}">${n}</option>`).join("")}</select></label>`).join("");
+  SKILLS.map(k=>`<label>${k} cape<select id="cape-${k}">${CAPES.map(([v,n])=>`<option value="${v}">${n}</option>`).join("")}</select></label>`).join("") +
+  SKILLS.map(k=>`<label title="Speed boost from enchanted jewellery (imported from profile)">${k} enchant <span><input type="number" min="0" max="40" step="0.5" id="ench-${k}" value="${S.boost.ench[k]}"> %</span></label>`).join("");
+SKILLS.forEach(k=>$("ench-"+k).addEventListener("input", e=>{ S.boost.ench[k]=+e.target.value||0; save(); render(); }));
+$("player").value = S.player||"";
+$("player").addEventListener("change", e=>{ S.player=e.target.value.trim(); save(); });
+$("importBtn").addEventListener("click", ()=>{ S.player=$("player").value.trim(); save(); importProfile(false); });
+$("player").addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); $("importBtn").click(); } });
 SKILLS.forEach(k=>{ $("tool-"+k).value=String(S.boost.tool[k]); $("tool-"+k).addEventListener("change", e=>{ S.boost.tool[k]=+e.target.value; save(); render(); });
   $("cape-"+k).value=String(S.boost.cape[k]); $("cape-"+k).addEventListener("change", e=>{ S.boost.cape[k]=+e.target.value; save(); render(); }); });
 for (const key of ["lumber","fisher","autocook","trickery","smelt","plank","forager"]){ const el=$("b-"+key); el.value=String(S.boost[key]||0); el.addEventListener("change", e=>{ S.boost[key]=+e.target.value; save(); render(); }); }
@@ -316,6 +349,7 @@ document.addEventListener("visibilitychange", ()=>{ if(!document.hidden && lastF
 setInterval(tick, 5000);
 schedule();
 fetchPrices();
+if (S.player) importProfile(true);
 </script>
 
 </body>
