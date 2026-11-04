@@ -49,8 +49,12 @@ label.chip input{margin:0;accent-color:var(--accent)}
 #settings h2{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 8px;font-weight:600}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px 14px}
 .grid label{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12.5px}
-.grid select{background:var(--bg);border:1px solid var(--line-2);border-radius:5px;padding:2px 4px;font-size:12px;max-width:130px}
-.grid.boosts label{gap:6px}
+.grid select{background:var(--bg);border:1px solid var(--line-2);border-radius:5px;padding:3px 4px;font-size:12px;width:132px;flex:none}
+.grid label > span:first-child, .grid label > b{min-width:0}
+.grid.boosts{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+.grid.boosts label{gap:8px}
+.grid.boosts label span{display:inline-flex;align-items:center;gap:4px;flex:none}
+.subhead{grid-column:1/-1;font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600;margin-top:6px}
 .grid input{width:58px;background:var(--bg);border:1px solid var(--line-2);border-radius:5px;padding:3px 6px;font-family:var(--mono);text-align:right}
 .grid input[type=checkbox]{width:auto;accent-color:var(--accent)}
 .settings-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12.5px;align-items:center}
@@ -124,6 +128,7 @@ body.compact td{padding:4px 8px} body.compact .hr{font-size:13px} body.compact .
   <h2 style="margin-top:14px">Boosts I own (recomputes every row for your account)</h2>
   <div class="grid boosts" id="boostSkills"></div>
   <div class="grid boosts" style="margin-top:8px">
+    <div class="subhead">Dealership and clan upgrades</div>
     <label title="Chance to double chopped logs (XP for one)">The lumberjack <select id="b-lumber"><option value="0">None</option><option value="20">T1 · 20%</option><option value="40">T2 · 40%</option><option value="60">T3 · 60%</option><option value="80">T4 · 80%</option><option value="100">T5 · 100%</option></select></label>
     <label title="Chance to double caught fish">The fisherman <select id="b-fisher"><option value="0">None</option><option value="20">T1 · 20%</option><option value="40">T2 · 40%</option><option value="60">T3 · 60%</option><option value="80">T4 · 80%</option><option value="100">T5 · 100%</option></select></label>
     <label title="Share of catches that arrive already cooked">Most efficient fisherman <select id="b-autocook"><option value="0">None</option><option value="10">T1 · 10%</option><option value="20">T2 · 20%</option><option value="30">T3 · 30%</option><option value="40">T4 · 40%</option><option value="50">T5 · 50%</option></select></label>
@@ -323,9 +328,9 @@ function save(){ store.set(S); }
 // ----- wire up controls
 $("levels").innerHTML = SKILLS.map(k=>`<label>${k}<input type="number" min="1" max="120" id="lvl-${k}" value="${S.levels[k]}"></label>`).join("");
 SKILLS.forEach(k=>$("lvl-"+k).addEventListener("input", e=>{ S.levels[k]=+e.target.value||1; save(); render(); }));
-$("boostSkills").innerHTML = SKILLS.map(k=>`<label>${k} tool<select id="tool-${k}">${TOOLS.map(([v,n])=>`<option value="${v}">${n}</option>`).join("")}</select></label>`).join("") +
-  SKILLS.map(k=>`<label>${k} cape<select id="cape-${k}">${CAPES.map(([v,n])=>`<option value="${v}">${n}</option>`).join("")}</select></label>`).join("") +
-  SKILLS.map(k=>`<label title="Speed boost from enchanted jewellery (imported from profile)">${k} enchant <span><input type="number" min="0" max="40" step="0.5" id="ench-${k}" value="${S.boost.ench[k]}"> %</span></label>`).join("");
+$("boostSkills").innerHTML = `<div class="subhead">Tools</div>` + SKILLS.map(k=>`<label>${k} tool<select id="tool-${k}">${TOOLS.map(([v,n])=>`<option value="${v}">${n}</option>`).join("")}</select></label>`).join("") +
+  `<div class="subhead">Skilling capes</div>` + SKILLS.map(k=>`<label>${k} cape<select id="cape-${k}">${CAPES.map(([v,n])=>`<option value="${v}">${n}</option>`).join("")}</select></label>`).join("") +
+  `<div class="subhead">Enchantment speed (imported)</div>` + SKILLS.map(k=>`<label title="Speed boost from enchanted jewellery (imported from profile)">${k} enchant <span><input type="number" min="0" max="40" step="0.5" id="ench-${k}" value="${S.boost.ench[k]}"> %</span></label>`).join("");
 SKILLS.forEach(k=>$("ench-"+k).addEventListener("input", e=>{ S.boost.ench[k]=+e.target.value||0; save(); render(); }));
 $("player").value = S.player||"";
 $("player").addEventListener("change", e=>{ S.player=e.target.value.trim(); save(); });
