@@ -46,6 +46,8 @@ label.chip input{margin:0}
 #settings h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 8px;font-weight:600}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px 12px}
 .grid label{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12.5px}
+.grid select{background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:2px 4px;font-size:12px;max-width:120px}
+.grid.boosts label{gap:6px}
 .grid input{width:58px;background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:3px 6px;font-family:var(--mono);text-align:right}
 .settings-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12.5px;align-items:center}
 .settings-row input{width:64px;background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:3px 6px;font-family:var(--mono);text-align:right}
@@ -104,6 +106,20 @@ body.compact td{padding:3px 5px} body.compact .hr{font-size:13px} body.compact .
     <label>Auto-refresh every <input id="interval" type="number" min="30" max="900" step="30"> s</label>
     <label>Sort by <select id="sort" class="chip"><option value="hr">Profit / hour</option><option value="act">Profit / action</option><option value="xp">XP / hour</option></select></label>
   </div>
+  <h2 style="margin-top:14px">Boosts I own (recomputes every row for your account)</h2>
+  <div class="grid boosts" id="boostSkills"></div>
+  <div class="grid boosts" style="margin-top:8px">
+    <label title="Chance to double chopped logs (XP for one)">The lumberjack <select id="b-lumber"><option value="0">None</option><option value="20">T1 · 20%</option><option value="40">T2 · 40%</option><option value="60">T3 · 60%</option><option value="80">T4 · 80%</option><option value="100">T5 · 100%</option></select></label>
+    <label title="Chance to double caught fish">The fisherman <select id="b-fisher"><option value="0">None</option><option value="20">T1 · 20%</option><option value="40">T2 · 40%</option><option value="60">T3 · 60%</option><option value="80">T4 · 80%</option><option value="100">T5 · 100%</option></select></label>
+    <label title="Share of catches that arrive already cooked">Most efficient fisherman <select id="b-autocook"><option value="0">None</option><option value="10">T1 · 10%</option><option value="20">T2 · 20%</option><option value="30">T3 · 30%</option><option value="40">T4 · 40%</option><option value="50">T5 · 50%</option></select></label>
+    <label title="Chance the seed is not used">Farming trickery <select id="b-trickery"><option value="0">None</option><option value="10">T1 · 10%</option><option value="20">T2 · 20%</option><option value="30">T3 · 30%</option><option value="40">T4 · 40%</option><option value="50">T5 · 50%</option></select></label>
+    <label title="Chance no ore is used (not Astronomical)">Smelting magic <select id="b-smelt"><option value="0">None</option><option value="10">T1 · 10%</option><option value="20">T2 · 20%</option><option value="30">T3 · 30%</option></select></label>
+    <label title="Cuts the gold cost of carpentry">Plank bargain <select id="b-plank"><option value="0">None</option><option value="30">T1 · −30%</option><option value="60">T2 · −60%</option><option value="100">T3 · free</option></select></label>
+    <label title="Chance to double foraged items">Power forager <select id="b-forager"><option value="0">None</option><option value="10">T1 · 10%</option><option value="20">T2 · 20%</option><option value="30">T3 · 30%</option><option value="40">T4 · 40%</option><option value="50">T5 · 50%</option></select></label>
+    <label title="Clan Gatherers (5%), housing, events… added to every gathering skill">Other gathering speed <span><input id="b-other" type="number" min="0" max="80" step="1"> %</span></label>
+    <label title="Clan upgrade: sales to NPC shops give 10% more gold"><span>NPC sales +10%</span><input id="b-npc10" type="checkbox"></label>
+  </div>
+  <p class="hint">Speed boosts (tool + cape + other) add together and cut the action time: 10 s at 25% becomes 7.5 s. Doubles raise the expected output (XP is for one item). Numbers from the Idle Clans wiki; check the in-game shop if yours differ.</p>
   <p class="hint">Settings are remembered in this browser only. Profit = output × better of (bid after tax, NPC value) − inputs × ask − gold costs, at base action speed with no boosts. Inputs with no sell offer use the 24h average; if that is missing too the row is flagged.</p>
 </section>
 
@@ -132,7 +148,12 @@ const store = {
   set(s){ try{ localStorage.setItem("icp-settings", JSON.stringify(s)); }catch(e){} }
 };
 const S = Object.assign({levels:{}, tax:1, interval:60, sort:"hr", topn:"10", cando:false, compact:false, cat:"All", open:null}, store.get());
-SKILLS.forEach(k=>{ if(S.levels[k]==null) S.levels[k]=120; });
+S.boost = Object.assign({tool:{}, cape:{}, lumber:0, fisher:0, autocook:0, trickery:0, smelt:0, plank:0, forager:0, other:0, npc10:false}, S.boost||{});
+SKILLS.forEach(k=>{ if(S.levels[k]==null) S.levels[k]=120; if(S.boost.tool[k]==null) S.boost.tool[k]=0; if(S.boost.cape[k]==null) S.boost.cape[k]=0; });
+const TOOLS = [["0","None"],["4","Normal 4%"],["6","Refined 6%"],["8","Great 8%"],["10","Elite 10%"],["12","Superior 12%"],["15","Outstanding 15%"],["20","Godlike 20%"],["25","Otherworldly 25%"]];
+const CAPES = [["0","None"],["5","T1 5%"],["10","T2 10%"],["15","T3 15%"],["20","T4 20%"]];
+const GATHER = {Woodcutting:1, Mining:1, Fishing:1};
+function speedPct(skill){ const b=S.boost; return Math.min(90, (+b.tool[skill]||0) + (+b.cape[skill]||0) + (GATHER[skill] ? (+b.other||0) : 0)); }
 
 let prices = null;      // itemId -> {bid, ask, avg}
 let lastFetch = null;
@@ -148,25 +169,53 @@ function price(name){
   return { bid: p && p.bid>0 ? p.bid : null, ask: p && p.ask>0 ? p.ask : null, avg: p && p.avg>0 ? p.avg : null, npc };
 }
 
+function sellValue(name, tax){
+  const p = price(name);
+  const market = p.bid!=null ? p.bid*(1-tax) : null;
+  const npc = p.npc!=null ? p.npc*(S.boost.npc10?1.1:1) : null;
+  let v = Math.max(market ?? 0, npc ?? 0);
+  if (market==null && npc==null) v = 0;
+  return {v, src:(market!=null && market>=(npc??0))?"market bid":"NPC", p};
+}
 function evaluate(m){
-  const tax = (S.tax||0)/100;
-  const out = price(m.out);
-  const sellMarket = out.bid!=null ? out.bid*(1-tax) : null;
-  let sell = Math.max(sellMarket ?? 0, out.npc ?? 0);
-  if (sellMarket==null && out.npc==null) sell = 0;
-  const revenue = m.qty * sell;
-  let cost = m.gold || 0, flagged = [];
+  const tax = (S.tax||0)/100, B = S.boost, notes = [];
+  // --- output: base, doubles, auto-cook
+  const o = sellValue(m.out, tax);
+  let outQty = m.qty, sell = o.v;
+  const isGather = m.cat==="Gathering";
+  if (isGather && m.skill==="Woodcutting" && +B.lumber>0){ outQty *= 1 + B.lumber/100; notes.push(`lumberjack ×${(1+B.lumber/100).toFixed(2)}`); }
+  if (isGather && m.skill==="Fishing" && +B.fisher>0){ outQty *= 1 + B.fisher/100; notes.push(`fisherman ×${(1+B.fisher/100).toFixed(2)}`); }
+  if (isGather && m.skill==="Fishing" && +B.autocook>0 && /^Raw /.test(m.out)){
+    const cooked = "Cooked " + m.out.slice(4);
+    if (DATA.items[cooked]!=null){ const c = sellValue(cooked, tax); const pc = B.autocook/100; sell = (1-pc)*o.v + pc*c.v; notes.push(`${B.autocook}% auto-cooked to ${cooked} (${fmt(c.v)})`); }
+  }
+  const revenue = outQty * sell;
+  // --- inputs
+  let gold = m.gold || 0;
+  if (m.cat==="Carpentry" && +B.plank>0 && gold){ gold *= 1 - B.plank/100; notes.push(`plank bargain −${B.plank}% gold`); }
+  let cost = gold, flagged = [];
+  const seedSave = (m.skill==="Farming" && +B.trickery>0) ? B.trickery/100 : 0;
+  const oreSave = (m.cat==="Smelting" && +B.smelt>0 && !/Astronomical|Otherworldly/.test(m.out)) ? B.smelt/100 : 0;
   const lines = m.inputs.map(([name, q])=>{
     const p = price(name);
     const unit = p.ask ?? p.avg;
     if (unit==null) flagged.push(name);
-    cost += q*(unit||0);
-    return {name, q, unit, src: p.ask!=null?"ask":(p.avg!=null?"24h avg":"none")};
+    let eq = q;
+    if (seedSave && /seed$/i.test(name)) eq = q*(1-seedSave);
+    if (oreSave && /ore$/i.test(name)) eq = q*(1-oreSave);
+    cost += eq*(unit||0);
+    return {name, q: eq, unit, src: p.ask!=null?"ask":(p.avg!=null?"24h avg":"none")};
   });
+  if (seedSave) notes.push(`trickery saves ${B.trickery}% of seeds`);
+  if (oreSave) notes.push(`smelting magic saves ${B.smelt}% of ore`);
+  // --- time
+  const sp = speedPct(m.skill);
+  const t = m.t * (1 - sp/100);
+  if (sp) notes.push(`${sp}% faster (${t.toFixed(2)} s)`);
   const perAction = revenue - cost;
-  const perHour = m.t>0 ? perAction*3600/m.t : 0;
-  const xpHour = m.t>0 ? m.xp*3600/m.t : 0;
-  return {m, revenue, cost, perAction, perHour, xpHour, lines, flagged, sell, sellSrc: (sellMarket!=null && sellMarket>=(out.npc??0))?"market bid":"NPC", out};
+  const perHour = t>0 ? perAction*3600/t : 0;
+  const xpHour = t>0 ? m.xp*3600/t : 0;
+  return {m, revenue, cost, perAction, perHour, xpHour, lines, flagged, sell, outQty, t, sellSrc:o.src, out:o.p, notes};
 }
 
 function render(){
@@ -190,15 +239,15 @@ function render(){
       <td class="name"><div class="title">${esc(m.name)}</div><div class="meta">${tags}</div></td>
       <td><span class="hr ${r.perHour>=0?"pos":"neg"}">${fmt(r.perHour)}</span></td>
       <td class="act">${fmt(r.perAction)}</td>
-      <td class="sec">${m.t}s</td></tr>`;
+      <td class="sec">${r.t%1?r.t.toFixed(1):r.t}s</td></tr>`;
     const detail = !isOpen ? "" : `<tr class="detail"><td colspan="5">
       <table><tr><th>Input</th><th class="num">Qty</th><th class="num">Unit</th><th class="num">Cost</th><th>Price used</th></tr>
-      ${r.lines.map(l=>`<tr><td>${esc(l.name)}</td><td class="num">${l.q}</td><td class="num">${l.unit!=null?fmt(l.unit):"—"}</td><td class="num">${fmt(l.q*(l.unit||0))}</td><td>${l.src}</td></tr>`).join("")}
+      ${r.lines.map(l=>`<tr><td>${esc(l.name)}</td><td class="num">${l.q%1?l.q.toFixed(2):l.q}</td><td class="num">${l.unit!=null?fmt(l.unit):"—"}</td><td class="num">${fmt(l.q*(l.unit||0))}</td><td>${l.src}</td></tr>`).join("")}
       ${m.gold?`<tr><td>Gold cost</td><td class="num"></td><td class="num"></td><td class="num">${fmt(m.gold)}</td><td></td></tr>`:""}
       <tr><th>Output</th><th class="num">Qty</th><th class="num">Unit</th><th class="num">Revenue</th><th>Sold to</th></tr>
-      <tr><td>${esc(m.out)}</td><td class="num">${m.qty}</td><td class="num">${fmt(r.sell)}</td><td class="num">${fmt(r.revenue)}</td><td>${r.sellSrc}${r.out.bid?` (bid ${fmt(r.out.bid)}, ask ${r.out.ask?fmt(r.out.ask):"—"})`:""}</td></tr>
+      <tr><td>${esc(m.out)}</td><td class="num">${r.outQty%1?r.outQty.toFixed(2):r.outQty}</td><td class="num">${fmt(r.sell)}</td><td class="num">${fmt(r.revenue)}</td><td>${r.sellSrc}${r.out.bid?` (bid ${fmt(r.out.bid)}, ask ${r.out.ask?fmt(r.out.ask):"—"})`:""}</td></tr>
       </table>
-      <div class="note">${fmt(r.perAction)} gold per action · ${fmt(r.xpHour)} ${m.skill} XP / hr${m.note?" · "+esc(m.note):""}</div>
+      <div class="note">${fmt(r.perAction)} gold per action · ${fmt(r.xpHour)} ${m.skill} XP / hr${r.notes.length?" · Boosts: "+esc(r.notes.join(", ")):""}${m.note?" · "+esc(m.note):""}</div>
     </td></tr>`;
     return main+detail;
   }).join("");
@@ -235,6 +284,13 @@ function save(){ store.set(S); }
 // ----- wire up controls
 $("levels").innerHTML = SKILLS.map(k=>`<label>${k}<input type="number" min="1" max="120" id="lvl-${k}" value="${S.levels[k]}"></label>`).join("");
 SKILLS.forEach(k=>$("lvl-"+k).addEventListener("input", e=>{ S.levels[k]=+e.target.value||1; save(); render(); }));
+$("boostSkills").innerHTML = SKILLS.map(k=>`<label>${k} tool<select id="tool-${k}">${TOOLS.map(([v,n])=>`<option value="${v}">${n}</option>`).join("")}</select></label>`).join("") +
+  SKILLS.map(k=>`<label>${k} cape<select id="cape-${k}">${CAPES.map(([v,n])=>`<option value="${v}">${n}</option>`).join("")}</select></label>`).join("");
+SKILLS.forEach(k=>{ $("tool-"+k).value=String(S.boost.tool[k]); $("tool-"+k).addEventListener("change", e=>{ S.boost.tool[k]=+e.target.value; save(); render(); });
+  $("cape-"+k).value=String(S.boost.cape[k]); $("cape-"+k).addEventListener("change", e=>{ S.boost.cape[k]=+e.target.value; save(); render(); }); });
+for (const key of ["lumber","fisher","autocook","trickery","smelt","plank","forager"]){ const el=$("b-"+key); el.value=String(S.boost[key]||0); el.addEventListener("change", e=>{ S.boost[key]=+e.target.value; save(); render(); }); }
+$("b-other").value=S.boost.other||0; $("b-other").addEventListener("input", e=>{ S.boost.other=+e.target.value||0; save(); render(); });
+$("b-npc10").checked=!!S.boost.npc10; $("b-npc10").addEventListener("change", e=>{ S.boost.npc10=e.target.checked; save(); render(); });
 $("tax").value=S.tax; $("tax").addEventListener("input", e=>{ S.tax=+e.target.value||0; save(); render(); });
 $("interval").value=S.interval; $("interval").addEventListener("change", e=>{ S.interval=+e.target.value||60; save(); schedule(); });
 $("sort").value=S.sort; $("sort").addEventListener("change", e=>{ S.sort=e.target.value; save(); render(); });
