@@ -140,13 +140,14 @@ body.compact td{padding:4px 8px} body.compact .hr{font-size:13px} body.compact .
 
 <div class="controls" id="controls">
   <select class="chip" id="topn"><option value="10">Top 10</option><option value="20">Top 20</option><option value="40">Top 40</option><option value="999">All</option></select>
-  <label class="chip"><input type="checkbox" id="cando"> Can do</label>
+  <label class="chip" title="Apply your tools, capes, upgrades and enchantments. Off = base game numbers for everyone."><input type="checkbox" id="useboost"> My boosts</label>
+  <label class="chip" title="Hide methods above your skill levels"><input type="checkbox" id="cando"> Can do</label>
   <label class="chip"><input type="checkbox" id="compact"> Compact</label>
   <span id="cats" style="display:contents"></span>
 </div>
 
 <div class="ledger"><table>
-  <thead><tr><th>#</th><th>Method</th><th>Gold / hr</th><th class="act">/ action</th><th>Sec</th></tr></thead>
+  <thead><tr><th>#</th><th>Method</th><th id="hrHead">Gold / hr</th><th class="act">/ action</th><th>Sec</th></tr></thead>
   <tbody id="rows"><tr><td colspan="5" class="empty">Fetching live prices…</td></tr></tbody>
 </table></div>
 
@@ -162,13 +163,15 @@ const store = {
   get(){ try{ return JSON.parse(localStorage.getItem("icp-settings")||"{}"); }catch(e){ return {}; } },
   set(s){ try{ localStorage.setItem("icp-settings", JSON.stringify(s)); }catch(e){} }
 };
-const S = Object.assign({levels:{}, tax:1, interval:60, sort:"hr", topn:"10", cando:false, compact:false, cat:"All", open:null}, store.get());
+const S = Object.assign({levels:{}, tax:1, interval:60, sort:"hr", topn:"10", cando:false, useboost:true, compact:false, cat:"All", open:null}, store.get());
 S.boost = Object.assign({tool:{}, cape:{}, ench:{}, lumber:0, fisher:0, autocook:0, trickery:0, smelt:0, plank:0, forager:0, other:0, npc10:false}, S.boost||{});
 SKILLS.forEach(k=>{ if(S.levels[k]==null) S.levels[k]=120; if(S.boost.tool[k]==null) S.boost.tool[k]=0; if(S.boost.cape[k]==null) S.boost.cape[k]=0; if(S.boost.ench[k]==null) S.boost.ench[k]=0; });
 const TOOLS = [["0","None"],["4","Normal 4%"],["6","Refined 6%"],["8","Great 8%"],["10","Elite 10%"],["12","Superior 12%"],["15","Outstanding 15%"],["20","Godlike 20%"],["25","Otherworldly 25%"]];
 const CAPES = [["0","None"],["5","T1 5%"],["10","T2 10%"],["15","T3 15%"],["20","T4 20%"]];
 const GATHER = {Woodcutting:1, Mining:1, Fishing:1};
-function speedPct(skill){ const b=S.boost; return Math.min(90, (+b.tool[skill]||0) + (+b.cape[skill]||0) + (+b.ench[skill]||0) + (GATHER[skill] ? (+b.other||0) : 0)); }
+const NOBOOST = {tool:{}, cape:{}, ench:{}, lumber:0, fisher:0, autocook:0, trickery:0, smelt:0, plank:0, forager:0, other:0, npc10:false};
+const activeBoost = () => S.useboost ? S.boost : NOBOOST;
+function speedPct(skill){ const b=activeBoost(); return Math.min(90, (+b.tool[skill]||0) + (+b.cape[skill]||0) + (+b.ench[skill]||0) + (GATHER[skill] ? (+b.other||0) : 0)); }
 const XP_TABLE = [0,75,151,227,303,380,531,683,836,988,1141,1294,1447,1751,2054,2358,2663,2967,3272,3577,4182,4788,5393,5999,6606,7212,7819,9026,10233,11441,12648,13856,15065,16273,18682,21091,23500,25910,28319,30729,33140,37950,42761,47572,52383,57195,62006,66818,76431,86043,95656,105269,114882,124496,134109,153323,172538,191752,210967,230182,249397,268613,307028,345444,383861,422277,460694,499111,537528,614346,691163,767981,844800,921618,998437,1075256,1228875,1382495,1536114,1689734,1843355,1996975,2150596,2457817,2765038,3072260,3379481,3686703,3993926,4301148,4915571,5529994,6144417,6758841,7373264,7987688,8602113,9830937,11059762,12288587,13517412,14746238,15975063,17203889,19661516,22119142,24576769,27034396,29492023,31949651,34407278,39322506,44237735,49152963,54068192,58983421,63898650,68813880,78644309,88474739];
 const levelFor = xp => { let n=0; for(const t of XP_TABLE){ if(xp>=t) n++; else break; } return Math.max(1, Math.min(120, n)); };
 const TIER = { lumber:[0,20,40,60,80,100], fisher:[0,20,40,60,80,100], autocook:[0,10,20,30,40,50], trickery:[0,10,20,30,40,50], smelt:[0,10,20,30], plank:[0,30,60,100], forager:[0,10,20,30,40,50] };
@@ -207,13 +210,13 @@ function price(name){
 function sellValue(name, tax){
   const p = price(name);
   const market = p.bid!=null ? p.bid*(1-tax) : null;
-  const npc = p.npc!=null ? p.npc*(S.boost.npc10?1.1:1) : null;
+  const npc = p.npc!=null ? p.npc*(activeBoost().npc10?1.1:1) : null;
   let v = Math.max(market ?? 0, npc ?? 0);
   if (market==null && npc==null) v = 0;
   return {v, src:(market!=null && market>=(npc??0))?"market bid":"NPC", p};
 }
 function evaluate(m){
-  const tax = (S.tax||0)/100, B = S.boost, notes = [];
+  const tax = (S.tax||0)/100, B = activeBoost(), notes = [];
   // --- output: base, doubles, auto-cook
   const o = sellValue(m.out, tax);
   let outQty = m.qty, sell = o.v;
@@ -255,6 +258,7 @@ function evaluate(m){
 
 function render(){
   document.body.classList.toggle("compact", !!S.compact);
+  $("hrHead").textContent = S.useboost ? "Gold / hr (boosted)" : "Gold / hr (base)";
   const tbody = $("rows");
   if(!prices){ return; }
   let rows = DATA.methods.map(evaluate);
@@ -336,6 +340,7 @@ $("tax").value=S.tax; $("tax").addEventListener("input", e=>{ S.tax=+e.target.va
 $("interval").value=S.interval; $("interval").addEventListener("change", e=>{ S.interval=+e.target.value||60; save(); schedule(); });
 $("sort").value=S.sort; $("sort").addEventListener("change", e=>{ S.sort=e.target.value; save(); render(); });
 $("topn").value=S.topn; $("topn").addEventListener("change", e=>{ S.topn=e.target.value; save(); render(); });
+$("useboost").checked=!!S.useboost; $("useboost").addEventListener("change", e=>{ S.useboost=e.target.checked; save(); render(); });
 $("cando").checked=S.cando; $("cando").addEventListener("change", e=>{ S.cando=e.target.checked; save(); render(); });
 $("compact").checked=S.compact; $("compact").addEventListener("change", e=>{ S.compact=e.target.checked; save(); render(); });
 $("cats").innerHTML = CATS.map(c=>`<button class="chip" data-cat="${c}" aria-pressed="${S.cat===c}">${c}</button>`).join("");
