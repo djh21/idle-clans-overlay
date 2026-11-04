@@ -71,6 +71,7 @@ for g in groups:
         tasks.append(row)
 
 out = {"skills": SKILLS, "fetched": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"), "tasks": tasks}
+import os; os.makedirs("data", exist_ok=True)
 json.dump(items_out, open("data/items.json", "w"), separators=(",", ":"))
 json.dump(out, open("data/tasks.json", "w"), separators=(",", ":"))
 print("items", len(items_out), "tasks", len(tasks))
