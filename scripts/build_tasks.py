@@ -11,10 +11,27 @@ SKILLS = {1:"Rigour",2:"Strength",3:"Defence",4:"Archery",5:"Magic",6:"Health",7
           18:"Enchanting",19:"Brewing",21:"Invocation"}
 BASE = "https://query.idleclans.com/api"
 
+import re
+def clean(txt):
+    # Mongo extended JSON tokens -> plain JSON
+    txt = re.sub(r'ObjectId\("([0-9a-fA-F]+)"\)', r'"\1"', txt)
+    txt = re.sub(r'ISODate\("([^"]+)"\)', r'"\1"', txt)
+    txt = re.sub(r'Number(?:Long|Int|Decimal)\("?(-?[0-9.]+)"?\)', r'\1', txt)
+    txt = re.sub(r'\bNaN\b', 'null', txt)
+    return txt
+
 def get(path):
     req = urllib.request.Request(BASE + path, headers={"User-Agent": "idle-clans-overlay data updater"})
     with urllib.request.urlopen(req, timeout=120) as r:
-        return json.loads(r.read().decode("utf-8"))
+        txt = r.read().decode("utf-8")
+    try:
+        return json.loads(txt)
+    except json.JSONDecodeError:
+        try:
+            return json.loads(clean(txt))
+        except json.JSONDecodeError as e:
+            print("Could not parse", path, "->", repr(txt[max(0,e.pos-80):e.pos+80]), file=sys.stderr)
+            raise
 
 items = get("/Items/metadata")
 items_out = {str(i["id"]): [i.get("name"), i.get("baseValue"), bool(i.get("tradeable"))] for i in items}
