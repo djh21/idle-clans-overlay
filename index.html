@@ -4,85 +4,93 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Idle Clans Profit Overlay</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: one dense ranked list, built to sit in a narrow always-on-top window or the Steam overlay browser. Dark by design (single theme). */
+/* Layout: one dense ranked ledger on cool white paper; brass accent for gold, medal badges for the top three. Light by design (single theme). */
 :root{
-  --bg:#0f1116; --panel:#171a22; --panel-2:#1e222c; --line:#2a2f3b;
-  --fg:#e6e8ee; --muted:#8b91a1; --accent:#f2b544; --accent-ink:#1a1200;
-  --gain:#5fd38a; --loss:#f06a6a; --warn:#f2b544;
-  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --bg:#f3f5f9; --panel:#ffffff; --panel-2:#eef2f8; --line:#d9dfe9; --line-2:#c3cbd8;
+  --fg:#1b2433; --muted:#5f6b7d; --accent:#b8860b; --accent-soft:#fdf3d6; --accent-ink:#2a1e00;
+  --gain:#1e7f4b; --gain-soft:#e3f4ea; --loss:#c23b3b; --loss-soft:#fbe6e6; --warn:#a0640a;
+  --gold:#d4a017; --silver:#9aa5b5; --bronze:#b97745;
+  --sans:"Rubik",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
-  color-scheme:dark;
+  color-scheme:light;
 }
 html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.4 var(--sans);
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px 24px}
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 28px}
 body.compact{font-size:12.5px}
 *{box-sizing:border-box}
 button,select,input{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
-header{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
-h1{font-size:15px;font-weight:600;margin:0;letter-spacing:.01em}
+header{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+h1{font-size:17px;font-weight:600;margin:0;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+h1::before{content:"";width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#ffe28a,#d4a017 60%,#9a6f0a);box-shadow:inset 0 0 0 2px rgba(255,255,255,.35);flex:none}
 .status{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12px;min-width:0}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
-.dot.ok{background:var(--gain)} .dot.err{background:var(--loss)} .dot.busy{background:var(--accent);animation:pulse 1s infinite}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--line-2);flex:none}
+.dot.ok{background:var(--gain)} .dot.err{background:var(--loss)} .dot.busy{background:var(--gold);animation:pulse 1s infinite}
 @keyframes pulse{50%{opacity:.3}}
 @media (prefers-reduced-motion:reduce){.dot.busy{animation:none}}
 .spacer{flex:1}
-.iconbtn{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:4px 9px;font-size:12px;color:var(--fg)}
+.iconbtn{background:var(--panel);border:1px solid var(--line-2);border-radius:7px;padding:5px 11px;font-size:12.5px;color:var(--fg);box-shadow:0 1px 0 rgba(27,36,51,.06)}
 .iconbtn:hover{background:var(--panel-2)}
+.iconbtn[aria-expanded="true"]{background:var(--accent-soft);border-color:var(--accent)}
 
-.controls{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:8px}
-.chip{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:12px;color:var(--muted)}
-.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.controls{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.chip{background:var(--panel);border:1px solid var(--line-2);border-radius:999px;padding:4px 11px;font-size:12px;color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--fg);border-color:var(--fg);color:#fff;font-weight:500}
 select.chip{appearance:auto;padding:3px 8px;color:var(--fg)}
 label.chip{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
-label.chip input{margin:0}
+label.chip input{margin:0;accent-color:var(--accent)}
 
-#settings{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:10px}
-#settings h2{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 8px;font-weight:600}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px 12px}
+#settings{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:12px;box-shadow:0 1px 2px rgba(27,36,51,.05)}
+#settings h2{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 8px;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px 14px}
 .grid label{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12.5px}
-.grid select{background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:2px 4px;font-size:12px;max-width:120px}
+.grid select{background:var(--bg);border:1px solid var(--line-2);border-radius:5px;padding:2px 4px;font-size:12px;max-width:130px}
 .grid.boosts label{gap:6px}
-.grid input{width:58px;background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:3px 6px;font-family:var(--mono);text-align:right}
+.grid input{width:58px;background:var(--bg);border:1px solid var(--line-2);border-radius:5px;padding:3px 6px;font-family:var(--mono);text-align:right}
+.grid input[type=checkbox]{width:auto;accent-color:var(--accent)}
 .settings-row{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12.5px;align-items:center}
-.settings-row input{width:64px;background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:3px 6px;font-family:var(--mono);text-align:right}
-.hint{color:var(--muted);font-size:11.5px;margin-top:8px}
+.settings-row input{width:64px;background:var(--bg);border:1px solid var(--line-2);border-radius:5px;padding:3px 6px;font-family:var(--mono);text-align:right}
+.hint{color:var(--muted);font-size:11.5px;margin:8px 0 0;line-height:1.45}
 
+.ledger{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;box-shadow:0 1px 2px rgba(27,36,51,.05)}
 table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
-th{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600;text-align:right;padding:4px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600;text-align:right;padding:8px 10px;background:var(--panel-2);border-bottom:1px solid var(--line);white-space:nowrap}
 th:nth-child(2){text-align:left}
-td{padding:5px 6px;border-bottom:1px solid var(--line);text-align:right;vertical-align:top;white-space:nowrap}
+td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;vertical-align:top;white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
 td.name{text-align:left;white-space:normal;min-width:0}
 tr.row{cursor:pointer}
-tr.row:hover td{background:var(--panel)}
-tr.row[aria-expanded="true"] td{background:var(--panel)}
-.rank{color:var(--muted);font-family:var(--mono);font-size:12px;width:28px}
+tr.row:hover td{background:#f8fafc}
+tr.row[aria-expanded="true"] td{background:var(--accent-soft)}
+.rank{color:var(--muted);font-family:var(--mono);font-size:12px;width:34px;text-align:center}
+.rank span{display:inline-block;min-width:22px;line-height:22px;border-radius:50%;font-weight:500}
+.rank.r1 span{background:var(--gold);color:#2a1e00} .rank.r2 span{background:var(--silver);color:#fff} .rank.r3 span{background:var(--bronze);color:#fff}
 .title{font-weight:500}
-.meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:2px}
-.tag{font-size:10.5px;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:0 5px;line-height:16px}
+.meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:3px}
+.tag{font-size:10.5px;color:var(--muted);background:var(--panel-2);border-radius:4px;padding:0 6px;line-height:17px}
 .tag.lvl{font-family:var(--mono)}
-.tag.locked{color:var(--warn);border-color:var(--warn)}
-.tag.nop{color:var(--loss);border-color:var(--loss)}
-.hr{font-family:var(--mono);font-size:15px;font-weight:500}
-.hr.pos{color:var(--gain)} .hr.neg{color:var(--loss)}
+.tag.locked{color:var(--warn);background:var(--accent-soft)}
+.tag.nop{color:var(--loss);background:var(--loss-soft)}
+.hr{font-family:var(--mono);font-size:15px;font-weight:500;padding:1px 7px;border-radius:5px}
+.hr.pos{color:var(--gain);background:var(--gain-soft)} .hr.neg{color:var(--loss);background:var(--loss-soft)}
 .act,.sec{font-family:var(--mono);color:var(--muted);font-size:12px}
-.detail td{background:var(--panel-2);white-space:normal;text-align:left;padding:8px 10px 10px 40px;cursor:default}
+.detail td{background:var(--panel-2);white-space:normal;text-align:left;padding:10px 12px 12px 44px;cursor:default;border-bottom:1px solid var(--line)}
 .detail table{width:auto;font-size:12px}
-.detail th,.detail td{padding:2px 8px 2px 0;border:0;background:none}
-.detail th{text-align:left}
+.detail th,.detail td{padding:2px 10px 2px 0;border:0;background:none}
+.detail th{text-align:left;font-size:10.5px}
 .detail .num{font-family:var(--mono);text-align:right}
-.detail .note{color:var(--muted);font-size:11.5px;margin-top:6px;max-width:60ch}
-.empty{color:var(--muted);padding:20px 8px;text-align:center}
-.error{background:#2a1717;border:1px solid var(--loss);border-radius:6px;padding:8px 10px;font-size:12.5px;margin-bottom:8px}
+.detail .note{color:var(--muted);font-size:11.5px;margin-top:8px;max-width:60ch}
+.empty{color:var(--muted);padding:22px 8px;text-align:center}
+.error{background:var(--loss-soft);border:1px solid var(--loss);color:#7a1f1f;border-radius:8px;padding:8px 10px;font-size:12.5px;margin-bottom:10px}
 footer{color:var(--muted);font-size:11px;margin-top:14px;line-height:1.5}
 footer a{color:var(--muted)}
-body.compact td{padding:3px 5px} body.compact .hr{font-size:13px} body.compact .meta{display:none} body.compact .act{display:none}
-@media (max-width:420px){.act{display:none}}
+body.compact td{padding:4px 8px} body.compact .hr{font-size:13px} body.compact .meta{display:none} body.compact .act{display:none}
+@media (max-width:420px){.act{display:none} th,td{padding-left:7px;padding-right:7px}}
 </style>
 </head>
 <body>
@@ -130,10 +138,10 @@ body.compact td{padding:3px 5px} body.compact .hr{font-size:13px} body.compact .
   <span id="cats" style="display:contents"></span>
 </div>
 
-<table>
+<div class="ledger"><table>
   <thead><tr><th>#</th><th>Method</th><th>Gold / hr</th><th class="act">/ action</th><th>Sec</th></tr></thead>
   <tbody id="rows"><tr><td colspan="5" class="empty">Fetching live prices…</td></tr></tbody>
-</table>
+</table></div>
 
 <footer>Prices: live from the official Idle Clans query API (same data as idleclans.com/market). Recipes, times and NPC values from the Idle Clans wiki; base speed, no tool or clan boosts. Not covered: combat drops, enchanting, ammunition, gemstones.</footer>
 
@@ -226,7 +234,7 @@ function render(){
   if (S.cat!=="All") rows = rows.filter(r=>r.m.cat===S.cat);
   if (S.cando) rows = rows.filter(r=>r.m.level <= (S.levels[r.m.skill] ?? 120));
   const key = S.sort==="act" ? "perAction" : S.sort==="xp" ? "xpHour" : "perHour";
-  rows.sort((a,b)=>b[key]-a[key]);
+  rows.sort((a,b)=>(a.flagged.length?1:0)-(b.flagged.length?1:0) || b[key]-a[key]);  // unpriced inputs sink to the bottom
   rows = rows.slice(0, +S.topn);
   if(!rows.length){ tbody.innerHTML = '<tr><td colspan="5" class="empty">No methods match these filters.</td></tr>'; return; }
   tbody.innerHTML = rows.map((r,i)=>{
@@ -235,7 +243,7 @@ function render(){
     const tags = `<span class="tag">${m.skill}</span><span class="tag lvl${locked?" locked":""}">Lv ${m.level}</span>` +
       (r.flagged.length?`<span class="tag nop" title="No price for: ${r.flagged.join(", ")}">unpriced input</span>`:"");
     const main = `<tr class="row" data-name="${esc(m.name)}" aria-expanded="${isOpen}" tabindex="0">
-      <td class="rank">${i+1}</td>
+      <td class="rank r${i+1}"><span>${i+1}</span></td>
       <td class="name"><div class="title">${esc(m.name)}</div><div class="meta">${tags}</div></td>
       <td><span class="hr ${r.perHour>=0?"pos":"neg"}">${fmt(r.perHour)}</span></td>
       <td class="act">${fmt(r.perAction)}</td>
