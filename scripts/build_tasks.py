@@ -1,0 +1,50 @@
+"""Fetch Idle Clans game data and write compact JSON for the overlay.
+
+Output:
+  data/items.json  {id: [name, baseValue, tradeable]}
+  data/tasks.json  {"skills": {id: name}, "tasks": [ ... non-combat tasks ... ], "fetched": iso}
+"""
+import json, sys, urllib.request, datetime
+
+SKILLS = {1:"Rigour",2:"Strength",3:"Defence",4:"Archery",5:"Magic",6:"Health",7:"Crafting",8:"Woodcutting",9:"Carpentry",
+          10:"Fishing",11:"Cooking",12:"Mining",13:"Smithing",14:"Foraging",15:"Farming",16:"Agility",17:"Plundering",
+          18:"Enchanting",19:"Brewing",21:"Invocation"}
+BASE = "https://query.idleclans.com/api"
+
+def get(path):
+    req = urllib.request.Request(BASE + path, headers={"User-Agent": "idle-clans-overlay data updater"})
+    with urllib.request.urlopen(req, timeout=120) as r:
+        return json.loads(r.read().decode("utf-8"))
+
+items = get("/Items/metadata")
+items_out = {str(i["id"]): [i.get("name"), i.get("baseValue"), bool(i.get("tradeable"))] for i in items}
+
+game = get("/Configuration/game-data?minVersion=0")
+groups = game.get("Tasks") or game.get("tasks") or []
+if isinstance(groups, dict):
+    groups = list(groups.values())
+
+KEEP = ["TaskId","Name","Skill","LevelRequirement","BaseTime","ExpReward","ItemReward","ItemAmount","Costs",
+        "Disabled","Hidden","AdditionalLevelRequirements","ItemIdRequired","BaseSuccessChancePercentage","TaskCategory"]
+DEFAULTS = (None, 0, 0.0, False, "", [], {})
+tasks = []
+for g in groups:
+    cid = g.get("CustomId", "")
+    for t in g.get("Items", []):
+        if (t.get("EnemyHealth") or 0) > 0 or t.get("IsBoss") or t.get("IsClanBoss"):
+            continue
+        row = {k: t.get(k) for k in KEEP if k in t}
+        # keep any other non-default field so unknown mechanics (e.g. gold costs) are visible
+        extra = {k: v for k, v in t.items() if k not in KEEP and v not in DEFAULTS and not k.startswith("Enemy")
+                 and k not in ("SecondaryAttack","InvocationData","DescriptionLocKey","CustomIconId","UsedAttackStyle",
+                               "AttackStyleWeakness","EnemyAttackInterval","EnemyRespawnTime","CanReceiveFromSkillingPartyEvent",
+                               "AffectedByShowUsTheMoney","TriggerMilestoneOnCompletion","CanBeTeamed","EnableProtections",
+                               "PreviousAttackStyleImmunity","IdentifiableType")}
+        if extra: row["extra"] = extra
+        row["group"] = cid
+        tasks.append(row)
+
+out = {"skills": SKILLS, "fetched": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"), "tasks": tasks}
+json.dump(items_out, open("data/items.json", "w"), separators=(",", ":"))
+json.dump(out, open("data/tasks.json", "w"), separators=(",", ":"))
+print("items", len(items_out), "tasks", len(tasks))
