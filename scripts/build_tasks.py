@@ -92,6 +92,21 @@ cfg = {k: game.get(k) for k in ("SharedSettings","RaidsLevelInfos","Exterminatin
 json.dump({"fetched": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"), "enemies": combat, "config": cfg},
           open("data/combat.json", "w"), separators=(",", ":"))
 
+# --- probe for item stat definitions anywhere in the feed
+def find_stats(node, path="", hits=None, depth=0):
+    hits = [] if hits is None else hits
+    if len(hits) > 40 or depth > 6: return hits
+    if isinstance(node, dict):
+        ks = " ".join(node.keys())
+        if re.search(r'StrengthBonus|AccuracyBonus|DefenceBonus|AttackInterval|AttackSpeed', ks) and "EnemyHealth" not in ks:
+            hits.append({"path": path, "sample": json.dumps(node)[:600]}); return hits
+        for k, v in node.items():
+            if k != "Tasks": find_stats(v, path + "/" + str(k), hits, depth + 1)
+    elif isinstance(node, list):
+        for i, v in enumerate(node[:30]): find_stats(v, path + f"/[{i}]", hits, depth + 1)
+    return hits
+json.dump({"top": list(game.keys()), "hits": find_stats(game)}, open("data/probe.json", "w"), indent=1)
+
 out = {"skills": SKILLS, "fetched": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"), "tasks": tasks}
 import os; os.makedirs("data", exist_ok=True)
 json.dump(items_out, open("data/items.json", "w"), separators=(",", ":"))
