@@ -1,0 +1,147 @@
+{
+ "top": [
+  "Tasks",
+  "Upgrades",
+  "ClientSettings",
+  "SharedSettings",
+  "ExterminatingInfo",
+  "RaidsLevelInfos",
+  "ClanQuestConfig",
+  "HolidayEventInfoDocument",
+  "Quests",
+  "ClanBossInfos",
+  "Items",
+  "MinigameData",
+  "Houses",
+  "ShopItems",
+  "PotionData",
+  "ClanUpgrades",
+  "Achievements"
+ ],
+ "hits": [
+  {
+   "path": "/SharedSettings/Settings",
+   "sample": "{\"RequiredBuildVersion\": \"1.6700\", \"LatestBuildVersion\": \"1.6700\", \"ConfigVersion\": 471, \"ServerConfigVersion\": 7, \"EnemyRespawnTimeMS\": 2550, \"CombatExpPerHit\": 4, \"HealthExpPerHit\": 1, \"StarterInventorySlotsUnlockedAmount\": 60, \"MaxAvailableInventorySlots\": 250, \"BaseClanVaultSpace\": 8, \"PremiumOneMonthItemId\": 336, \"PremiumPermanentItemId\": 337, \"TasksLockedBehindPremium\": [10, 12, 14], \"MaxPremiumSkillLevelWithoutRank\": 30, \"BaseOfflineProgressCapHours\": 12, \"OfflineHoursFromPremium\": 6, \"ChatEnabled\": true, \"UnarmedAttackSpeedMS\": 3600, \"MaxPlayerShopSlots\": 6, \"PlayerShopSlotsWithoutPrem"
+  },
+  {
+   "path": "/Items/Items/[0]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 0, \"Discontinued\": false, \"Name\": \"spruce_log\", \"ItemCounterpartId\": 0, \"BaseValue\": 6, \"AssociatedSkill\": 8, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 13, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicAccurac"
+  },
+  {
+   "path": "/Items/Items/[1]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 1, \"Discontinued\": false, \"Name\": \"pine_log\", \"ItemCounterpartId\": 0, \"BaseValue\": 10, \"AssociatedSkill\": 8, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 13, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicAccuracy"
+  },
+  {
+   "path": "/Items/Items/[2]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 2, \"Discontinued\": false, \"Name\": \"chestnut_log\", \"ItemCounterpartId\": 0, \"BaseValue\": 30, \"AssociatedSkill\": 8, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 13, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicAccu"
+  },
+  {
+   "path": "/Items/Items/[3]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 3, \"Discontinued\": true, \"Name\": \"raw_roach\", \"ItemCounterpartId\": 101, \"BaseValue\": 20, \"AssociatedSkill\": 10, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 7, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicAccura"
+  },
+  {
+   "path": "/Items/Items/[4]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 4, \"Discontinued\": false, \"Name\": \"raw_perch\", \"ItemCounterpartId\": 102, \"BaseValue\": 8, \"AssociatedSkill\": 10, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 7, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicAccura"
+  },
+  {
+   "path": "/Items/Items/[5]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 5, \"Discontinued\": true, \"Name\": \"raw_pike\", \"ItemCounterpartId\": 103, \"BaseValue\": 30, \"AssociatedSkill\": 10, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 7, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicAccurac"
+  },
+  {
+   "path": "/Items/Items/[6]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 6, \"Discontinued\": false, \"Name\": \"oak_log\", \"ItemCounterpartId\": 0, \"BaseValue\": 13, \"AssociatedSkill\": 8, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 13, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicAccuracyB"
+  },
+  {
+   "path": "/Items/Items/[7]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 7, \"Discontinued\": false, \"Name\": \"maple_log\", \"ItemCounterpartId\": 0, \"BaseValue\": 16, \"AssociatedSkill\": 8, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 13, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicAccurac"
+  },
+  {
+   "path": "/Items/Items/[8]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 8, \"Discontinued\": false, \"Name\": \"teak_log\", \"ItemCounterpartId\": 0, \"BaseValue\": 20, \"AssociatedSkill\": 8, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 13, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicAccuracy"
+  },
+  {
+   "path": "/Items/Items/[9]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 9, \"Discontinued\": false, \"Name\": \"mahogany_log\", \"ItemCounterpartId\": 0, \"BaseValue\": 40, \"AssociatedSkill\": 8, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 13, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicAccu"
+  },
+  {
+   "path": "/Items/Items/[10]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 10, \"Discontinued\": false, \"Name\": \"yew_log\", \"ItemCounterpartId\": 0, \"BaseValue\": 55, \"AssociatedSkill\": 8, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 13, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicAccuracy"
+  },
+  {
+   "path": "/Items/Items/[11]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 11, \"Discontinued\": true, \"Name\": \"raw_shrimp\", \"ItemCounterpartId\": 0, \"BaseValue\": 25, \"AssociatedSkill\": 10, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 7, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicAccura"
+  },
+  {
+   "path": "/Items/Items/[12]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 12, \"Discontinued\": false, \"Name\": \"raw_mackerel\", \"ItemCounterpartId\": 100, \"BaseValue\": 10, \"AssociatedSkill\": 10, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 7, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicA"
+  },
+  {
+   "path": "/Items/Items/[13]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 13, \"Discontinued\": false, \"Name\": \"raw_trout\", \"ItemCounterpartId\": 104, \"BaseValue\": 16, \"AssociatedSkill\": 10, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 7, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicAccu"
+  },
+  {
+   "path": "/Items/Items/[14]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 14, \"Discontinued\": false, \"Name\": \"raw_salmon\", \"ItemCounterpartId\": 105, \"BaseValue\": 17, \"AssociatedSkill\": 10, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 7, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicAcc"
+  },
+  {
+   "path": "/Items/Items/[15]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 15, \"Discontinued\": false, \"Name\": \"raw_carp\", \"ItemCounterpartId\": 106, \"BaseValue\": 18, \"AssociatedSkill\": 10, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 7, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicAccur"
+  },
+  {
+   "path": "/Items/Items/[16]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 16, \"Discontinued\": true, \"Name\": \"raw_bass\", \"ItemCounterpartId\": 107, \"BaseValue\": 45, \"AssociatedSkill\": 10, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 7, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicAccura"
+  },
+  {
+   "path": "/Items/Items/[17]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 17, \"Discontinued\": true, \"Name\": \"raw_lobster\", \"ItemCounterpartId\": 108, \"BaseValue\": 80, \"AssociatedSkill\": 10, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 7, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicAcc"
+  },
+  {
+   "path": "/Items/Items/[18]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 18, \"Discontinued\": true, \"Name\": \"raw_shark\", \"ItemCounterpartId\": 109, \"BaseValue\": 70, \"AssociatedSkill\": 10, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 7, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicAccur"
+  },
+  {
+   "path": "/Items/Items/[19]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 19, \"Discontinued\": false, \"Name\": \"gold\", \"ItemCounterpartId\": 0, \"BaseValue\": 1, \"AssociatedSkill\": 0, \"CanNotBeSoldToGameShop\": true, \"CanNotBeTraded\": true, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 0, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicAccuracyBonus\":"
+  },
+  {
+   "path": "/Items/Items/[20]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 20, \"Discontinued\": false, \"Name\": \"spruce_plank\", \"ItemCounterpartId\": 0, \"BaseValue\": 35, \"AssociatedSkill\": 9, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 13, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicAcc"
+  },
+  {
+   "path": "/Items/Items/[21]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 21, \"Discontinued\": false, \"Name\": \"pine_plank\", \"ItemCounterpartId\": 0, \"BaseValue\": 45, \"AssociatedSkill\": 9, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 13, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicAccur"
+  },
+  {
+   "path": "/Items/Items/[22]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 22, \"Discontinued\": false, \"Name\": \"chestnut_plank\", \"ItemCounterpartId\": 0, \"BaseValue\": 85, \"AssociatedSkill\": 9, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 13, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicA"
+  },
+  {
+   "path": "/Items/Items/[23]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 23, \"Discontinued\": false, \"Name\": \"oak_plank\", \"ItemCounterpartId\": 0, \"BaseValue\": 55, \"AssociatedSkill\": 9, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 13, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicAccura"
+  },
+  {
+   "path": "/Items/Items/[24]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 24, \"Discontinued\": false, \"Name\": \"maple_plank\", \"ItemCounterpartId\": 0, \"BaseValue\": 65, \"AssociatedSkill\": 9, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 13, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicAccu"
+  },
+  {
+   "path": "/Items/Items/[25]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 25, \"Discontinued\": false, \"Name\": \"teak_plank\", \"ItemCounterpartId\": 0, \"BaseValue\": 75, \"AssociatedSkill\": 9, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 13, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicAccur"
+  },
+  {
+   "path": "/Items/Items/[26]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 26, \"Discontinued\": false, \"Name\": \"mahogany_plank\", \"ItemCounterpartId\": 0, \"BaseValue\": 95, \"AssociatedSkill\": 9, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 13, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicA"
+  },
+  {
+   "path": "/Items/Items/[27]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 27, \"Discontinued\": false, \"Name\": \"yew_plank\", \"ItemCounterpartId\": 0, \"BaseValue\": 110, \"AssociatedSkill\": 9, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 13, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicAccur"
+  },
+  {
+   "path": "/Items/Items/[28]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 28, \"Discontinued\": false, \"Name\": \"tin_ore\", \"ItemCounterpartId\": 0, \"BaseValue\": 5, \"AssociatedSkill\": 12, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 12, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicAccuracy"
+  },
+  {
+   "path": "/Items/Items/[29]",
+   "sample": "{\"ExtraBoostAgainstWeakEnemiesPercentage\": 0, \"ExtraBoostPercentageAgainstQuestMonsters\": 0, \"ItemId\": 29, \"Discontinued\": false, \"Name\": \"copper_ore\", \"ItemCounterpartId\": 0, \"BaseValue\": 5, \"AssociatedSkill\": 12, \"CanNotBeSoldToGameShop\": false, \"CanNotBeTraded\": false, \"PlayerMarketBuyLimit\": 0, \"IsGameShopToken\": false, \"TradeableWithClan\": false, \"IsClanBound\": false, \"FlipSprite\": false, \"IsTool\": false, \"Unobtainable\": false, \"MasteryCapeType\": 0, \"Category\": 12, \"EquipmentSlot\": 0, \"StrengthBonus\": 0, \"AccuracyBonus\": 0, \"ArcheryAccuracyBonus\": 0, \"ArcheryStrengthBonus\": 0, \"MagicAccur"
+  }
+ ]
+}
