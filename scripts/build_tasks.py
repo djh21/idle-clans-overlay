@@ -124,10 +124,10 @@ def diff_run():
         if k not in pi: add("item", v[0] or k, "new item" + (f", NPC value {v[1]}" if v[1] else ""))
         elif pi[k][1] != v[1]: add("item", v[0] or k, f"NPC value {pi[k][1]} → {v[1]}")
         elif bool(pi[k][2]) != bool(v[2]): add("item", v[0] or k, "now tradeable" if v[2] else "no longer tradeable")
-    pt = {t.get("TaskId"): t for t in ((PREV["tasks.json"] or {}).get("tasks") or [])}
+    pt = {(t.get("group"), t.get("Name")): t for t in ((PREV["tasks.json"] or {}).get("tasks") or [])}
     names = {int(k): v[0] for k, v in items_out.items()}
     for t in tasks:
-        o = pt.get(t.get("TaskId")); nm = str(t.get("Name", "")).replace("_", " ")
+        o = pt.get((t.get("group"), t.get("Name"))); nm = str(t.get("Name", "")).replace("_", " ")
         if o is None: add("task", nm, f"new {SKILLS.get(t.get('Skill'), '')} task, level {t.get('LevelRequirement')}"); continue
         for f, label in (("BaseTime", "time"), ("ExpReward", "XP"), ("ItemAmount", "output qty"), ("LevelRequirement", "level"), ("Costs", "inputs"), ("Disabled", "disabled"), ("Hidden", "hidden")):
             if o.get(f) != t.get(f):
@@ -138,9 +138,9 @@ def diff_run():
                 elif f == "BaseTime": a, b = f"{(a or 0)/1000:g}s", f"{(b or 0)/1000:g}s"
                 add("task", nm, f"{label} {a} → {b}")
         if (o.get("extra") or {}).get("PlunderingLoot") != (t.get("extra") or {}).get("PlunderingLoot"): add("task", nm, "plundering loot table changed")
-    pc = {e.get("TaskId"): e for e in ((PREV["combat.json"] or {}).get("enemies") or [])}
+    pc = {(e.get("group"), e.get("Name")): e for e in ((PREV["combat.json"] or {}).get("enemies") or [])}
     for e in combat:
-        o = pc.get(e.get("TaskId")); nm = str(e.get("Name", "")).replace("_", " ")
+        o = pc.get((e.get("group"), e.get("Name"))); nm = str(e.get("Name", "")).replace("_", " ")
         if o is None: add("combat", nm, "new enemy"); continue
         for f in ("EnemyHealth", "EnemyDefenceLevel", "EnemyDefenceBonus", "EnemyAttackInterval", "AttackStyleWeakness", "ItemIdRequired", "LevelRequirement"):
             if o.get(f) != e.get(f): add("combat", nm, f"{f.replace('Enemy', '')} {o.get(f)} → {e.get(f)}")
