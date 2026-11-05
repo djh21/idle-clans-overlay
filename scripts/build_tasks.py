@@ -4,7 +4,8 @@ Output:
   data/items.json  {id: [name, baseValue, tradeable]}
   data/tasks.json  {"skills": {id: name}, "tasks": [ ... non-combat tasks ... ], "fetched": iso}
 """
-import json, sys, urllib.request, datetime
+import json, sys, urllib.request, datetime, os
+os.makedirs("data", exist_ok=True)
 
 SKILLS = {1:"Rigour",2:"Strength",3:"Defence",4:"Archery",5:"Magic",6:"Health",7:"Crafting",8:"Woodcutting",9:"Carpentry",
           10:"Fishing",11:"Cooking",12:"Mining",13:"Smithing",14:"Foraging",15:"Farming",16:"Agility",17:"Plundering",
@@ -75,7 +76,6 @@ clan = {"fetched": datetime.datetime.now(datetime.timezone.utc).isoformat(timesp
         "upgrades": (game.get("ClanUpgrades") or {}).get("Items", []),
         "questRewards": (game.get("ClanQuestConfig") or {}).get("Rewards", []),
         "questConfig": {k: v for k, v in (game.get("ClanQuestConfig") or {}).items() if k in ("MaxActiveBuffs",)}}
-import os; os.makedirs("data", exist_ok=True)
 json.dump(clan, open("data/clan.json", "w"), separators=(",", ":"))
 if os.path.exists("data/probe.json"): os.remove("data/probe.json")
 
@@ -92,20 +92,18 @@ cfg = {k: game.get(k) for k in ("SharedSettings","RaidsLevelInfos","Exterminatin
 json.dump({"fetched": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"), "enemies": combat, "config": cfg},
           open("data/combat.json", "w"), separators=(",", ":"))
 
-# --- probe for item stat definitions anywhere in the feed
-def find_stats(node, path="", hits=None, depth=0):
-    hits = [] if hits is None else hits
-    if len(hits) > 40 or depth > 6: return hits
-    if isinstance(node, dict):
-        ks = " ".join(node.keys())
-        if re.search(r'StrengthBonus|AccuracyBonus|DefenceBonus|AttackInterval|AttackSpeed', ks) and "EnemyHealth" not in ks:
-            hits.append({"path": path, "sample": json.dumps(node)[:600]}); return hits
-        for k, v in node.items():
-            if k != "Tasks": find_stats(v, path + "/" + str(k), hits, depth + 1)
-    elif isinstance(node, list):
-        for i, v in enumerate(node[:30]): find_stats(v, path + f"/[{i}]", hits, depth + 1)
-    return hits
-json.dump({"top": list(game.keys()), "hits": find_stats(game)}, open("data/probe.json", "w"), indent=1)
+# --- equipment stats: every item with an equipment slot or a heal/boost value, trimmed of zero/false fields
+allitems = (game.get("Items") or {}).get("Items", [])
+SKIP = {"ExtraBoostPercentageAgainstQuestMonsters","Discontinued","ItemCounterpartId","CanNotBeSoldToGameShop","CanNotBeTraded","PlayerMarketBuyLimit",
+        "IsGameShopToken","TradeableWithClan","IsClanBound","FlipSprite","Unobtainable","MasteryCapeType","Category","DescriptionLocKey","NameLocKey","CustomIconId","IdentifiableType"}
+gear = []
+for it in allitems:
+    row = {k: v for k, v in it.items() if k not in SKIP and v not in DEFAULTS}
+    if it.get("EquipmentSlot") or any(k for k in row if re.search(r'Heal|Boost|Interval|Bonus|Style|Requirement', k)):
+        gear.append(row)
+json.dump({"fetched": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"), "keys": sorted({k for g in gear for k in g}), "items": gear},
+          open("data/gear.json", "w"), separators=(",", ":"))
+if os.path.exists("data/probe.json"): os.remove("data/probe.json")
 
 out = {"skills": SKILLS, "fetched": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"), "tasks": tasks}
 import os; os.makedirs("data", exist_ok=True)
