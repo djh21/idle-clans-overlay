@@ -98,7 +98,7 @@ SKIP = {"ExtraBoostPercentageAgainstQuestMonsters","Discontinued","ItemCounterpa
         "IsGameShopToken","TradeableWithClan","IsClanBound","FlipSprite","Unobtainable","MasteryCapeType","Category","DescriptionLocKey","NameLocKey","CustomIconId","IdentifiableType"}
 gear = []
 for it in allitems:
-    row = {k: v for k, v in it.items() if k not in SKIP and v not in DEFAULTS}
+    row = {k: v for k, v in it.items() if k not in SKIP and v not in DEFAULTS}; row["ItemId"] = it.get("ItemId", 0)
     if it.get("EquipmentSlot") or any(k for k in row if re.search(r'Heal|Boost|Interval|Bonus|Style|Requirement', k)):
         gear.append(row)
 json.dump({"fetched": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"), "keys": sorted({k for g in gear for k in g}), "items": gear},
