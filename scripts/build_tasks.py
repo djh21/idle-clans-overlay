@@ -70,33 +70,14 @@ for g in groups:
         row["group"] = cid
         tasks.append(row)
 
-# --- probe: where do clan upgrades live in the feed? (small structural dump, no task payloads)
-def key_paths(node, path="", depth=0, acc=None):
-    acc = {} if acc is None else acc
-    if depth > 3: return acc
-    if isinstance(node, dict):
-        for k, v in node.items():
-            p = path + "/" + str(k)
-            acc[p] = type(v).__name__ + (f"[{len(v)}]" if isinstance(v, (list, dict)) else "")
-            if k != "Tasks": key_paths(v, p, depth + 1, acc)
-    elif isinstance(node, list) and node:
-        key_paths(node[0], path + "/[0]", depth + 1, acc)
-    return acc
-def find_upgrades(node, path="", hits=None):
-    hits = [] if hits is None else hits
-    if len(hits) > 60: return hits
-    if isinstance(node, dict):
-        blob = json.dumps(node)[:400]
-        if re.search(r'clan_?upgrade|ClanUpgrade', blob, re.I) and not any(h["path"] in path for h in hits):
-            hits.append({"path": path, "sample": blob}); return hits
-        for k, v in node.items():
-            if k != "Tasks": find_upgrades(v, path + "/" + str(k), hits)
-    elif isinstance(node, list):
-        for i, v in enumerate(node[:50]): find_upgrades(v, path + f"/[{i}]", hits)
-    return hits
-probe = {"paths": key_paths(game), "upgrade_hits": find_upgrades(game)}
+# --- clan upgrades (Type = numeric id used by /api/Clan/recruitment serializedUpgrades) and clan quest buffs
+clan = {"fetched": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
+        "upgrades": (game.get("ClanUpgrades") or {}).get("Items", []),
+        "questRewards": (game.get("ClanQuestConfig") or {}).get("Rewards", []),
+        "questConfig": {k: v for k, v in (game.get("ClanQuestConfig") or {}).items() if k in ("MaxActiveBuffs",)}}
 import os; os.makedirs("data", exist_ok=True)
-json.dump(probe, open("data/probe.json", "w"), indent=1)
+json.dump(clan, open("data/clan.json", "w"), separators=(",", ":"))
+if os.path.exists("data/probe.json"): os.remove("data/probe.json")
 
 out = {"skills": SKILLS, "fetched": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"), "tasks": tasks}
 import os; os.makedirs("data", exist_ok=True)
