@@ -79,6 +79,19 @@ import os; os.makedirs("data", exist_ok=True)
 json.dump(clan, open("data/clan.json", "w"), separators=(",", ":"))
 if os.path.exists("data/probe.json"): os.remove("data/probe.json")
 
+# --- combat: every enemy/boss task with its full definition (drop tables, stats), plus sibling config sections
+combat = []
+for g in groups:
+    cid = g.get("CustomId", "")
+    for t in g.get("Items", []):
+        if (t.get("EnemyHealth") or 0) > 0 or t.get("IsBoss") or t.get("IsClanBoss"):
+            row = {k: v for k, v in t.items() if v not in DEFAULTS and k not in ("DescriptionLocKey","CustomIconId","IdentifiableType")}
+            row["group"] = cid
+            combat.append(row)
+cfg = {k: game.get(k) for k in ("SharedSettings","RaidsLevelInfos","ExterminatingInfo") if k in game}
+json.dump({"fetched": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"), "enemies": combat, "config": cfg},
+          open("data/combat.json", "w"), separators=(",", ":"))
+
 out = {"skills": SKILLS, "fetched": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"), "tasks": tasks}
 import os; os.makedirs("data", exist_ok=True)
 json.dump(items_out, open("data/items.json", "w"), separators=(",", ":"))
