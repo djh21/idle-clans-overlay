@@ -115,6 +115,11 @@ json.dump(items_out, open("data/items.json", "w"), separators=(",", ":"))
 json.dump(out, open("data/tasks.json", "w"), separators=(",", ":"))
 print("items", len(items_out), "tasks", len(tasks))
 
+# --- dealership/account upgrades: full definitions (ids, tiers, costs, effects)
+ups = (game.get("Upgrades") or {}).get("Items", [])
+json.dump({"fetched": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"), "keys": sorted({k for u in ups for k in u}), "items": ups},
+          open("data/upgrades.json", "w"), separators=(",", ":"))
+
 # --- update radar: what changed since the last run (kept for 60 days in data/changes.json)
 def diff_run():
     changes = []
