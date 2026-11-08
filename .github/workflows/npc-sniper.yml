@@ -1,0 +1,45 @@
+name: NPC-floor sniper
+on:
+  schedule:
+    - cron: "*/5 * * * *"   # every 5 min (GitHub's minimum; real cadence is often 5–15 min)
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Print the 15 items nearest the NPC floor instead of alerting"
+        type: boolean
+        default: false
+  push:
+    paths: ["scripts/npc_sniper.py", ".github/workflows/npc-sniper.yml"]
+permissions:
+  contents: read
+concurrency:
+  group: npc-sniper
+  cancel-in-progress: false
+jobs:
+  snipe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      # Dedupe state: restore the newest previous cache, save a fresh one each run.
+      - uses: actions/cache@v4
+        with:
+          path: .sniper_state.json
+          key: sniper-state-${{ github.run_id }}
+          restore-keys: sniper-state-
+      - name: Scan market
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          NPC_CLAN: ${{ vars.NPC_CLAN || '1' }}
+          NPC_NEGO: ${{ vars.NPC_NEGO || '1' }}
+          MIN_PROFIT: ${{ vars.SNIPER_MIN_PROFIT || '1' }}
+          MIN_TOTAL: ${{ vars.SNIPER_MIN_TOTAL || '250' }}
+          COOLDOWN_MIN: ${{ vars.SNIPER_COOLDOWN_MIN || '60' }}
+        run: |
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            python scripts/npc_sniper.py --dry-run
+          else
+            python scripts/npc_sniper.py
+          fi
