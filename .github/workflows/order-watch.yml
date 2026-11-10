@@ -3,6 +3,10 @@ on:
   schedule:
     - cron: "*/5 * * * *"   # GitHub's minimum; real cadence is often 5–15 min
   workflow_dispatch:
+    inputs:
+      probe_item:
+        description: "Dry run: pretend to have a sell at 1 above the cheapest ask for this itemId (checks parsing; changes nothing)"
+        required: false
   push:
     paths: ["data/watchlist.json", "scripts/watch_orders.py", ".github/workflows/order-watch.yml"]
 permissions:
@@ -23,7 +27,24 @@ jobs:
           path: .watch_state.json
           key: watch-state-${{ github.run_id }}
           restore-keys: watch-state-
+      - name: Probe (dry run)
+        if: ${{ inputs.probe_item != '' && inputs.probe_item != null }}
+        run: |
+          python - <<'PY'
+          import json, sys
+          sys.path.insert(0, "scripts"); import watch_orders as w
+          iid = "${{ inputs.probe_item }}"
+          b = w.get_json(w.BASE + iid)
+          print(json.dumps(b)[:800])
+          asks = w.ladder(b["lowestSellPricesWithVolume"]); bids = w.ladder(b["highestBuyPricesWithVolume"]); print("asks", asks, "bids", bids)
+          json.dump({"updated": "probe", "orders": [
+            {"account": "probe", "item": "probe", "itemId": int(iid), "side": "sell", "price": min(asks) + 1, "qty": 10},
+            {"account": "probe", "item": "probe", "itemId": int(iid), "side": "buy", "price": max(bids), "qty": 10}]}, open("data/watchlist.json", "w"))
+          PY
+          python scripts/watch_orders.py --dry-run
+          git checkout data/watchlist.json
       - name: Check listings
+        if: ${{ inputs.probe_item == '' || inputs.probe_item == null }}
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: python scripts/watch_orders.py
