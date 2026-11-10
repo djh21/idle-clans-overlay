@@ -1,0 +1,38 @@
+name: Order watcher
+on:
+  schedule:
+    - cron: "*/5 * * * *"   # GitHub's minimum; real cadence is often 5–15 min
+  workflow_dispatch:
+  push:
+    paths: ["data/watchlist.json", "scripts/watch_orders.py", ".github/workflows/order-watch.yml"]
+permissions:
+  contents: write
+concurrency:
+  group: order-watch
+  cancel-in-progress: false
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - uses: actions/cache@v4
+        with:
+          path: .watch_state.json
+          key: watch-state-${{ github.run_id }}
+          restore-keys: watch-state-
+      - name: Check listings
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: python scripts/watch_orders.py
+      - name: Commit fills and status
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/watchlist.json data/trades.json 2>/dev/null || true
+          if ! git diff --cached --quiet; then
+            git commit -m "Order watcher: fills / status"
+            for i in 1 2 3; do git pull --rebase -q origin main && git push -q && break; sleep 5; done
+          fi
